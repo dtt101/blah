@@ -1,5 +1,6 @@
 import React from 'react';
 import ChannelSection from './channels/ChannelSection.jsx';
+import UserSection from './users/UserSection.jsx';
 
 class App extends React.Component {
 
@@ -7,7 +8,9 @@ class App extends React.Component {
     super(props);
     this.state = {
       channels: [],
-      activeChannel: {}
+      activeChannel: {},
+      users: [],
+      activeUser: {}
     }
   }
 
