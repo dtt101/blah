@@ -29,6 +29,21 @@ class App extends React.Component {
     // TODO: get channels messages from server
   }
 
+  addUser(name) {
+    let {users} = this.state;
+    users.push({
+      id: users.length,
+      name
+    });
+    this.setState(users);
+    // TODO: make API call to server
+  }
+
+  setUser(activeUser) {
+    this.setState({activeUser});
+    // TODO: get users from server
+  }
+
   render() {
     return (
       <div className="app">
@@ -38,6 +53,10 @@ class App extends React.Component {
             setChannel={this.setChannel.bind(this)}
             addChannel={this.addChannel.bind(this)}
             />
+          <UserSection {...this.state}
+            setUser={this.setUser.bind(this)}
+            addUser={this.addUser.bind(this)}
+          />
         </div>
       </div>
     )
