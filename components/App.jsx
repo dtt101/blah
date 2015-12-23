@@ -1,6 +1,7 @@
 import React from 'react';
 import ChannelSection from './channels/ChannelSection.jsx';
 import UserSection from './users/UserSection.jsx';
+import MessageSection from './messages/MessageSection.jsx';
 
 class App extends React.Component {
 
@@ -10,7 +11,8 @@ class App extends React.Component {
       channels: [],
       activeChannel: {},
       users: [],
-      activeUser: {}
+      activeUser: {},
+      messages: []
     }
   }
 
@@ -44,6 +46,16 @@ class App extends React.Component {
     // TODO: get users from server
   }
 
+  addMessage(message) {
+    let {messages} = this.state;
+    messages.push({
+      id: messages.length,
+      body: message
+    });
+    this.setState(messages);
+    // TODO: make API call to server
+  }
+
   render() {
     return (
       <div className="app">
@@ -57,6 +69,10 @@ class App extends React.Component {
             setUser={this.setUser.bind(this)}
             addUser={this.addUser.bind(this)}
           />
+        <MessageSection
+          {...this.state}
+          addMessage={this.addMessage.bind(this)}
+        />
         </div>
       </div>
     )
