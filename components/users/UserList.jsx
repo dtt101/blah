@@ -7,7 +7,7 @@ class UserList extends React.Component {
       return <User
         key={user.id}
         user={user}
-        {...this.props} />
+      />
     });
     return (
       <ul className="list-unstyled">
@@ -18,9 +18,7 @@ class UserList extends React.Component {
 }
 
 UserList.propTypes = {
-  users: React.PropTypes.array.isRequired,
-  setUser: React.PropTypes.func.isRequired,
-  activeUser: React.PropTypes.object.isRequired,
+  users: React.PropTypes.array.isRequired
 };
 
 export default UserList;

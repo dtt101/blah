@@ -19675,6 +19675,10 @@
 
 	var _UserSection2 = _interopRequireDefault(_UserSection);
 
+	var _MessageSection = __webpack_require__(168);
+
+	var _MessageSection2 = _interopRequireDefault(_MessageSection);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -19695,7 +19699,8 @@
 	      channels: [],
 	      activeChannel: {},
 	      users: [],
-	      activeUser: {}
+	      activeUser: {},
+	      messages: []
 	    };
 	    return _this;
 	  }
@@ -19731,10 +19736,25 @@
 	      // TODO: make API call to server
 	    }
 	  }, {
-	    key: 'setUser',
-	    value: function setUser(activeUser) {
-	      this.setState({ activeUser: activeUser });
-	      // TODO: get users from server
+	    key: 'setUserName',
+	    value: function setUserName(name) {
+	      var users = this.state.users;
+
+	      users.push({ id: users.length, name: name });
+	      this.setState({ users: users });
+	      // TODO: send to server
+	    }
+	  }, {
+	    key: 'addMessage',
+	    value: function addMessage(message) {
+	      var messages = this.state.messages;
+
+	      messages.push({
+	        id: messages.length,
+	        body: message
+	      });
+	      this.setState(messages);
+	      // TODO: make API call to server
 	    }
 	  }, {
 	    key: 'render',
@@ -19750,10 +19770,12 @@
 	            addChannel: this.addChannel.bind(this)
 	          })),
 	          _react2.default.createElement(_UserSection2.default, _extends({}, this.state, {
-	            setUser: this.setUser.bind(this),
-	            addUser: this.addUser.bind(this)
+	            setUserName: this.setUserName.bind(this)
 	          }))
-	        )
+	        ),
+	        _react2.default.createElement(_MessageSection2.default, _extends({}, this.state, {
+	          addMessage: this.addMessage.bind(this)
+	        }))
 	      );
 	    }
 	  }]);
@@ -20129,9 +20151,7 @@
 
 	UserSection.propTypes = {
 	  users: _react2.default.PropTypes.array.isRequired,
-	  setUser: _react2.default.PropTypes.func.isRequired,
-	  addUser: _react2.default.PropTypes.func.isRequired,
-	  activeUser: _react2.default.PropTypes.object.isRequired
+	  setUserName: _react2.default.PropTypes.func.isRequired
 	};
 
 	exports.default = UserSection;
@@ -20141,8 +20161,6 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
@@ -20178,13 +20196,11 @@
 	  _createClass(UserList, [{
 	    key: 'render',
 	    value: function render() {
-	      var _this2 = this;
-
 	      var userNodes = this.props.users.map(function (user) {
-	        return _react2.default.createElement(_User2.default, _extends({
+	        return _react2.default.createElement(_User2.default, {
 	          key: user.id,
 	          user: user
-	        }, _this2.props));
+	        });
 	      });
 	      return _react2.default.createElement(
 	        'ul',
@@ -20198,9 +20214,7 @@
 	})(_react2.default.Component);
 
 	UserList.propTypes = {
-	  users: _react2.default.PropTypes.array.isRequired,
-	  setUser: _react2.default.PropTypes.func.isRequired,
-	  activeUser: _react2.default.PropTypes.object.isRequired
+	  users: _react2.default.PropTypes.array.isRequired
 	};
 
 	exports.default = UserList;
@@ -20239,31 +20253,14 @@
 	  }
 
 	  _createClass(User, [{
-	    key: 'onClick',
-	    value: function onClick(e) {
-	      e.preventDefault();
-	      var _props = this.props;
-	      var setUser = _props.setUser;
-	      var user = _props.user;
-
-	      setUser(user);
-	    }
-	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var _props2 = this.props;
-	      var user = _props2.user;
-	      var activeUser = _props2.activeUser;
+	      var user = this.props.user;
 
-	      var active = user === activeUser ? 'active' : '';
 	      return _react2.default.createElement(
 	        'li',
-	        { className: active },
-	        _react2.default.createElement(
-	          'a',
-	          { onClick: this.onClick.bind(this) },
-	          user.name
-	        )
+	        null,
+	        user.name
 	      );
 	    }
 	  }]);
@@ -20272,9 +20269,7 @@
 	})(_react.Component);
 
 	User.propTypes = {
-	  user: _react2.default.PropTypes.object.isRequired,
-	  setUser: _react2.default.PropTypes.func.isRequired,
-	  activeUser: _react2.default.PropTypes.object.isRequired
+	  user: _react2.default.PropTypes.object.isRequired
 	};
 
 	exports.default = User;
@@ -20320,9 +20315,9 @@
 	    key: 'onSubmit',
 	    value: function onSubmit(e) {
 	      e.preventDefault();
-	      var node = this.refs.user;
-	      var name = node.value;
-	      this.props.addUser(name);
+	      var node = this.refs.userName;
+	      var userName = node.value;
+	      this.props.setUserName(userName);
 	      node.value = '';
 	    }
 	  }, {
@@ -20334,7 +20329,10 @@
 	        _react2.default.createElement(
 	          'div',
 	          { className: 'form-group' },
-	          _react2.default.createElement('input', { type: 'text', className: 'form-control', placeholder: 'Add user', ref: 'user' })
+	          _react2.default.createElement('input', { type: 'text',
+	            className: 'form-control',
+	            placeholder: 'Set your name...',
+	            ref: 'userName' })
 	        )
 	      );
 	    }
@@ -20344,10 +20342,567 @@
 	})(_react2.default.Component);
 
 	UserForm.propTypes = {
-	  addUser: _react2.default.PropTypes.func.isRequired
+	  setUserName: _react2.default.PropTypes.func.isRequired
 	};
 
 	exports.default = UserForm;
+
+/***/ },
+/* 168 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _MessageList = __webpack_require__(169);
+
+	var _MessageList2 = _interopRequireDefault(_MessageList);
+
+	var _MessageForm = __webpack_require__(172);
+
+	var _MessageForm2 = _interopRequireDefault(_MessageForm);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var MessageSection = (function (_React$Component) {
+	  _inherits(MessageSection, _React$Component);
+
+	  function MessageSection() {
+	    _classCallCheck(this, MessageSection);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(MessageSection).apply(this, arguments));
+	  }
+
+	  _createClass(MessageSection, [{
+	    key: 'render',
+	    value: function render() {
+	      return _react2.default.createElement(
+	        'div',
+	        { className: 'support panel panel-primary' },
+	        _react2.default.createElement(
+	          'div',
+	          { className: 'panel-heading' },
+	          _react2.default.createElement(
+	            'strong',
+	            null,
+	            'Messages'
+	          )
+	        ),
+	        _react2.default.createElement(
+	          'div',
+	          { className: 'panel-body' },
+	          _react2.default.createElement(_MessageList2.default, this.props),
+	          _react2.default.createElement(_MessageForm2.default, this.props)
+	        )
+	      );
+	    }
+	  }]);
+
+	  return MessageSection;
+	})(_react2.default.Component);
+
+	MessageSection.propTypes = {
+	  messages: _react2.default.PropTypes.array.isRequired,
+	  addMessage: _react2.default.PropTypes.func.isRequired
+	};
+
+	exports.default = MessageSection;
+
+/***/ },
+/* 169 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _Message = __webpack_require__(170);
+
+	var _Message2 = _interopRequireDefault(_Message);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var MessageList = (function (_React$Component) {
+	  _inherits(MessageList, _React$Component);
+
+	  function MessageList() {
+	    _classCallCheck(this, MessageList);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(MessageList).apply(this, arguments));
+	  }
+
+	  _createClass(MessageList, [{
+	    key: 'render',
+	    value: function render() {
+	      var _this2 = this;
+
+	      var messageNodes = this.props.messages.map(function (message) {
+	        return _react2.default.createElement(_Message2.default, _extends({
+	          key: message.id,
+	          message: message
+	        }, _this2.props));
+	      });
+	      return _react2.default.createElement(
+	        'ul',
+	        { className: 'list-unstyled' },
+	        messageNodes
+	      );
+	    }
+	  }]);
+
+	  return MessageList;
+	})(_react2.default.Component);
+
+	MessageList.propTypes = {
+	  messages: _react2.default.PropTypes.array.isRequired
+	};
+
+	exports.default = MessageList;
+
+/***/ },
+/* 170 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _fecha = __webpack_require__(171);
+
+	var _fecha2 = _interopRequireDefault(_fecha);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Message = (function (_Component) {
+	  _inherits(Message, _Component);
+
+	  function Message() {
+	    _classCallCheck(this, Message);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(Message).apply(this, arguments));
+	  }
+
+	  _createClass(Message, [{
+	    key: 'render',
+	    value: function render() {
+	      var message = this.props.message;
+
+	      var createdAt = _fecha2.default.format(message.createdAt, 'HH:mm:ss MM/DD');
+	      return _react2.default.createElement(
+	        'li',
+	        { className: 'message' },
+	        _react2.default.createElement(
+	          'div',
+	          { className: 'author' },
+	          _react2.default.createElement(
+	            'strong',
+	            null,
+	            message.author
+	          ),
+	          _react2.default.createElement(
+	            'i',
+	            { className: 'timestamp' },
+	            createdAt
+	          )
+	        ),
+	        _react2.default.createElement(
+	          'div',
+	          { className: 'body' },
+	          message.body
+	        )
+	      );
+	    }
+	  }]);
+
+	  return Message;
+	})(_react.Component);
+
+	Message.propTypes = {
+	  message: _react2.default.PropTypes.object.isRequired
+	};
+
+	exports.default = Message;
+
+/***/ },
+/* 171 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_RESULT__;(function (main) {
+		'use strict';
+
+		/**
+		 * Parse or format dates
+		 * @class fecha
+		 */
+		var fecha = {},
+			token = /d{1,4}|M{1,4}|YY(?:YY)?|S{1,3}|Do|ZZ|([HhMsDm])\1?|[aA]|"[^"]*"|'[^']*'/g,
+			dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+			monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+			amPm = ['am', 'pm'],
+			twoDigits = /\d\d?/, threeDigits = /\d{3}/, fourDigits = /\d{4}/,
+			word = /[0-9]*['a-z\u00A0-\u05FF\u0700-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+|[\u0600-\u06FF\/]+(\s*?[\u0600-\u06FF]+){1,2}/i,
+			noop = function () {},
+			dayNamesShort = [], monthNamesShort = [],
+			parseFlags = {
+				D: [twoDigits, function (d, v) {
+					d.day = v;
+				}],
+				M: [twoDigits, function (d, v) {
+					d.month = v - 1;
+				}],
+				YY: [twoDigits, function (d, v) {
+					var da = new Date(), cent = +('' + da.getFullYear()).substr(0, 2);
+					d.year = '' + (v > 68 ? cent - 1 : cent) + v;
+				}],
+				h: [twoDigits, function (d, v) {
+					d.hour = v;
+				}],
+				m: [twoDigits, function (d, v) {
+					d.minute = v;
+				}],
+				s: [twoDigits, function (d, v) {
+					d.second = v;
+				}],
+				YYYY: [fourDigits, function (d, v) {
+					d.year = v;
+				}],
+				S: [/\d/, function (d, v) {
+					d.millisecond = v * 100;
+				}],
+				SS: [/\d{2}/, function (d, v) {
+					d.millisecond = v * 10;
+				}],
+				SSS: [threeDigits, function (d, v) {
+					d.millisecond = v;
+				}],
+				d: [twoDigits, noop],
+				ddd: [word, noop],
+				MMM: [word, monthUpdate('monthNamesShort')],
+				MMMM: [word, monthUpdate('monthNames')],
+				a: [word, function (d, v) {
+					var val = v.toLowerCase();
+					if (val === amPm[0]) {
+						d.isPm = false;
+					} else if (val === amPm[1]) {
+						d.isPm = true;
+					}
+				}],
+				ZZ: [/[\+\-]\d\d:?\d\d/, function (d, v) {
+					var parts = (v + '').match(/([\+\-]|\d\d)/gi), minutes;
+
+					if (parts) {
+						minutes = +(parts[1] * 60) + parseInt(parts[2], 10);
+						d.timezoneOffset = parts[0] === '+' ? minutes : -minutes;
+					}
+
+				}]
+			};
+		parseFlags.dd = parseFlags.d;
+		parseFlags.dddd = parseFlags.ddd;
+		parseFlags.Do = parseFlags.DD = parseFlags.D;
+		parseFlags.mm = parseFlags.m;
+		parseFlags.hh = parseFlags.H = parseFlags.HH = parseFlags.h;
+		parseFlags.MM = parseFlags.M;
+		parseFlags.ss = parseFlags.s;
+		parseFlags.A = parseFlags.a;
+
+		shorten(monthNames, monthNamesShort, 3);
+		shorten(dayNames, dayNamesShort, 3);
+
+		function monthUpdate(arrName) {
+			return function (d, v) {
+				var index = fecha.i18n[arrName].indexOf(v.charAt(0).toUpperCase() + v.substr(1).toLowerCase());
+				if (~index) {
+					d.month = index;
+				}
+			}
+		}
+
+		function pad(val, len) {
+			val = String(val);
+			len = len || 2;
+			while (val.length < len) {
+				val = '0' + val;
+			}
+			return val;
+		}
+
+		function shorten(arr, newArr, sLen) {
+			for (var i = 0, len = arr.length; i < len; i++) {
+				newArr.push(arr[i].substr(0, sLen));
+			}
+		}
+
+		function DoFn(D) {
+			return D + [ 'th', 'st', 'nd', 'rd' ][ D % 10 > 3 ? 0 : (D - D % 10 !== 10) * D % 10 ];
+		}
+
+		fecha.i18n = {
+			dayNamesShort: dayNamesShort,
+			dayNames: dayNames,
+			monthNamesShort: monthNamesShort,
+			monthNames: monthNames,
+			amPm: amPm,
+			DoFn: DoFn
+		};
+
+		// Some common format strings
+		fecha.masks = {
+			'default': 'ddd MMM DD YYYY HH:mm:ss',
+			shortDate: 'M/D/YY',
+			mediumDate: 'MMM D, YYYY',
+			longDate: 'MMMM D, YYYY',
+			fullDate: 'dddd, MMMM D, YYYY',
+			shortTime: 'HH:mm',
+			mediumTime: 'HH:mm:ss',
+			longTime: 'HH:mm:ss.SSS'
+		};
+
+		/***
+		 * Format a date
+		 * @method format
+		 * @param {Date|number} dateObj
+		 * @param {string} mask Format of the date, i.e. 'mm-dd-yy' or 'shortDate'
+		 */
+		fecha.format = function (dateObj, mask) {
+			if (typeof dateObj === 'number') {
+				dateObj = new Date(dateObj);
+			}
+
+			if (!dateObj || typeof dateObj !== 'object' && typeof dateObj.getDate  !== 'function') {
+				throw new Error('Invalid Date in fecha.format');
+			}
+
+			mask = fecha.masks[mask] || mask || fecha.masks['default'];
+
+			var D = dateObj.getDate(),
+				d = dateObj.getDay(),
+				M = dateObj.getMonth(),
+				y = dateObj.getFullYear(),
+				H = dateObj.getHours(),
+				m = dateObj.getMinutes(),
+				s = dateObj.getSeconds(),
+				S = dateObj.getMilliseconds(),
+				o = dateObj.getTimezoneOffset(),
+				flags = {
+					D: D,
+					DD: pad(D),
+					Do: fecha.i18n.DoFn(D),
+					d: d,
+					dd: pad(d),
+					ddd: fecha.i18n.dayNamesShort[d],
+					dddd: fecha.i18n.dayNames[d],
+					M: M + 1,
+					MM: pad(M + 1),
+					MMM: fecha.i18n.monthNamesShort[M],
+					MMMM: fecha.i18n.monthNames[M],
+					YY: String(y).slice(2),
+					YYYY: y,
+					h: H % 12 || 12,
+					hh: pad(H % 12 || 12),
+					H: H,
+					HH: pad(H),
+					m: m,
+					mm: pad(m),
+					s: s,
+					ss: pad(s),
+					S: Math.round(S / 100),
+					SS: pad(Math.round(S / 10), 2),
+					SSS: pad(S, 3),
+					a: H < 12 ? fecha.i18n.amPm[0] : fecha.i18n.amPm[1],
+					A: H < 12 ? fecha.i18n.amPm[0].toUpperCase() : fecha.i18n.amPm[1].toUpperCase(),
+					ZZ: (o > 0 ? '-' : '+') + pad(Math.floor(Math.abs(o) / 60) * 100 + Math.abs(o) % 60, 4)
+				};
+
+			return mask.replace(token, function ($0) {
+				return $0 in flags ? flags[$0] : $0.slice(1, $0.length - 1);
+			});
+		};
+
+		/**
+		 * Parse a date string into an object, changes - into /
+		 * @method parse
+		 * @param {string} dateStr Date string
+		 * @param {string} format Date parse format
+		 * @returns {Date|boolean}
+		 */
+		fecha.parse = function (dateStr, format) {
+			var isValid, dateInfo, today, date, info, index;
+
+			if (typeof format !== 'string') {
+				throw new Error('Invalid format in fecha.parse');
+			}
+
+			format = fecha.masks[format] || format;
+
+			isValid = true;
+			dateInfo = {};
+			format.replace(token, function ($0) {
+				if (parseFlags[$0]) {
+					info = parseFlags[$0];
+					index = dateStr.search(info[0]);
+					if (!~index) {
+						isValid = false;
+					} else {
+						dateStr.replace(info[0], function (result) {
+							info[1](dateInfo, result);
+							dateStr = dateStr.substr(index + result.length);
+							return result;
+						});
+					}
+				}
+
+				return parseFlags[$0] ? '' : $0.slice(1, $0.length - 1);
+			});
+
+			if (!isValid) {
+				return false;
+			}
+
+			today = new Date();
+			if (dateInfo.isPm === true && dateInfo.hour != null && +dateInfo.hour !== 12) {
+				dateInfo.hour = +dateInfo.hour + 12;
+			} else if (dateInfo.isPm === false && +dateInfo.hour === 12) {
+				dateInfo.hour = 0;
+			}
+
+			if (dateInfo.timezoneOffset != null) {
+				dateInfo.minute = +(dateInfo.minute || 0) - +dateInfo.timezoneOffset;
+				date = new Date(Date.UTC(dateInfo.year || today.getFullYear(), dateInfo.month || 0, dateInfo.day || 1,
+					dateInfo.hour || 0, dateInfo.minute || 0, dateInfo.second || 0, dateInfo.millisecond || 0));
+			} else {
+				date = new Date(dateInfo.year || today.getFullYear(), dateInfo.month || 0, dateInfo.day || 1,
+					dateInfo.hour || 0, dateInfo.minute || 0, dateInfo.second || 0, dateInfo.millisecond || 0);
+			}
+			return date;
+		};
+
+		if (typeof module !== 'undefined' && module.exports) {
+			module.exports = fecha;
+		} else if (true) {
+			!(__WEBPACK_AMD_DEFINE_RESULT__ = function () {
+				return fecha;
+			}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else {
+			main.fecha = fecha;
+		}
+	})(this);
+
+
+/***/ },
+/* 172 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _react = __webpack_require__(1);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _MessageList = __webpack_require__(169);
+
+	var _MessageList2 = _interopRequireDefault(_MessageList);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var MessageForm = (function (_React$Component) {
+	  _inherits(MessageForm, _React$Component);
+
+	  function MessageForm() {
+	    _classCallCheck(this, MessageForm);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(MessageForm).apply(this, arguments));
+	  }
+
+	  _createClass(MessageForm, [{
+	    key: 'onSubmit',
+	    value: function onSubmit(e) {
+	      e.preventDefault();
+	      var node = this.refs.message;
+	      var message = node.value;
+	      this.props.addMessage(message);
+	      node.value = '';
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      return _react2.default.createElement(
+	        'form',
+	        { onSubmit: this.onSubmit.bind(this) },
+	        _react2.default.createElement(
+	          'div',
+	          { className: 'form-group' },
+	          _react2.default.createElement('input', { type: 'text', className: 'form-control', placeholder: 'Send', ref: 'message' })
+	        )
+	      );
+	    }
+	  }]);
+
+	  return MessageForm;
+	})(_react2.default.Component);
+
+	MessageForm.propTypes = {
+	  addMessage: _react2.default.PropTypes.func.isRequired
+	};
+
+	exports.default = MessageForm;
 
 /***/ }
 /******/ ]);

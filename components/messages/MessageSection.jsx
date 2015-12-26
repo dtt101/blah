@@ -4,12 +4,13 @@ import MessageForm from './MessageForm.jsx';
 
 class MessageSection extends React.Component {
   render() {
+    let {activeChannel} = this.props;
     return (
-      <div className="support panel panel-primary">
+      <div className="messages-container panel panel-default">
         <div className="panel-heading">
-          <strong>Messages</strong>
+          <strong>{activeChannel.name}</strong>
         </div>
-        <div className="panel-body">
+        <div className="panel-body messages">
           <MessageList {...this.props} />
           <MessageForm {...this.props} />
         </div>
@@ -20,6 +21,7 @@ class MessageSection extends React.Component {
 
 MessageSection.propTypes = {
   messages: React.PropTypes.array.isRequired,
+  activeChannel: React.PropTypes.object.isRequired,
   addMessage: React.PropTypes.func.isRequired
 }
 

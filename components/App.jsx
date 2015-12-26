@@ -41,16 +41,22 @@ class App extends React.Component {
     // TODO: make API call to server
   }
 
-  setUser(activeUser) {
-    this.setState({activeUser});
-    // TODO: get users from server
+  setUserName(name) {
+    let {users} = this.state;
+    users.push({id: users.length, name})
+    this.setState({users});
+    // TODO: send to server
   }
 
-  addMessage(message) {
-    let {messages} = this.state;
+  addMessage(body) {
+    let {messages, users} = this.state;
+    let createdAt = new Date();
+    let author = users.length > 0 ? users[0].name : 'anonymous';
     messages.push({
       id: messages.length,
-      body: message
+      body,
+      createdAt,
+      author
     });
     this.setState(messages);
     // TODO: make API call to server
@@ -66,14 +72,13 @@ class App extends React.Component {
             addChannel={this.addChannel.bind(this)}
             />
           <UserSection {...this.state}
-            setUser={this.setUser.bind(this)}
-            addUser={this.addUser.bind(this)}
+            setUserName={this.setUserName.bind(this)}
           />
+        </div>
         <MessageSection
           {...this.state}
           addMessage={this.addMessage.bind(this)}
         />
-        </div>
       </div>
     )
   }

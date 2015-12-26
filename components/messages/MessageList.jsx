@@ -7,7 +7,7 @@ class MessageList extends React.Component {
       return <Message
         key={message.id}
         message={message}
-        {...this.props} />
+        />
     });
     return (
       <ul className="list-unstyled">

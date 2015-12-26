@@ -12,10 +12,21 @@ class MessageForm extends React.Component {
   }
 
   render() {
+    let input;
+    if (this.props.activeChannel.id !== undefined) {
+      input = (
+        <input
+          ref='message'
+          type='text'
+          className='form-control'
+          placeholder='Add message'
+        />
+      )
+    }
     return (
       <form onSubmit={this.onSubmit.bind(this)}>
         <div className="form-group">
-          <input type="text" className="form-control" placeholder="Send" ref="message" />
+          {input}
         </div>
       </form>
     )
@@ -24,6 +35,7 @@ class MessageForm extends React.Component {
 }
 
 MessageForm.propTypes = {
+  activeChannel: React.PropTypes.object.isRequired,
   addMessage: React.PropTypes.func.isRequired
 }
 
